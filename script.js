@@ -214,7 +214,7 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
     const email = document.getElementById('email').value.trim();
     const historySelect = document.getElementById('history');
     const history = historySelect.options[historySelect.selectedIndex].text;
-
+    const notes = document.getElementById('notes').value.trim();
     const nickname = document.getElementById('nickname') ? document.getElementById('nickname').value : '';
 
     // 檢查與驗證
@@ -229,7 +229,8 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 
     const formData = {
         service: service, staff: staff, date: date, time: time, name: name, phone: phone,
-        email: email, history: history
+        email: email, history: history,
+        notes: notes
     };
 
     // 發送資料 (使用全域變數 GOOGLE_SCRIPT_URL)
@@ -268,6 +269,7 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
             document.getElementById('phone').value = '';
             document.getElementById('email').value = '';
             document.getElementById('history').selectedIndex = 0;
+            document.getElementById('notes').value = '';
 
             // 重設日期邏輯 (修復錯誤的日期重置)
             const today = new Date();
@@ -339,3 +341,4 @@ window.addEventListener('load', async function () {
     updateServiceInfo();
 
 });
+
