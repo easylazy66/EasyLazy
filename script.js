@@ -1,7 +1,7 @@
 // --- JavaScript 邏輯區 ---
 
 // 全域變數：Google Apps Script 網址
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxN-QpjmaQu4eno1xeVKVwZZ2CLMitcp9r024ljVCeLjvLpyYlfCnCUz4FegAaeEsDzA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9RlvXy7-JFRcRZOVMQFJUWhs9zz0SJEU0oiXGnZCOs1biMpbUKYa-jzk-OmRipqs-jQ/exec';
 
 //  新增全域變數：用於儲存所有預約資料，避免重複向 Google 請求 
 let allBookedRecords = [];
@@ -341,4 +341,5 @@ window.addEventListener('load', async function () {
     updateServiceInfo();
 
 });
+
 
