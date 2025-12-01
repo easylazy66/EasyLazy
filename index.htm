@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="EasyLazy美睫預約 - 線上預訂專屬時段">
+    <meta property="og:description" content="提供日式單根嫁接-客製款服務。查看即時空檔，24小時線上預約。">
+    <meta property="og:type" content="website">
+    <title>EasyLazy線上預約</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="loadingModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>預約資料加載中</h2>
+            <p>正在從雲端同步最新預約資訊...</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar-indeterminate"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>EasyLazy 線上預約</h1>
+        <p class="subtitle">請選擇服務項目、日期與時段，並留下您的聯絡資訊。</p>
+
+        <form id="bookingForm">
+            <div class="form-group">
+                <label for="service">選擇服務項目</label>
+                <select id="service" required onchange="updateServiceInfo()">
+                    <option value="single_custom" selected>日式單根嫁接-客製款</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="staff">選擇服務美睫師</label>
+                <select id="staff">
+                    <option value="peggy" selected>Peggy</option>
+                    <!--<option value="unspecified">不指定</option>-->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date">選擇預約日期</label>
+                <input type="date" id="date" required onchange="generateTimeSlots()">
+            </div>
+
+            <div class="form-group time-selection">
+                <label>選擇可預約時段</label>
+                <div id="timeSlotsContainer">
+                    <div style="grid-column: 1/-1; color: #888; text-align: center;">請先選擇日期</div>
+                </div>
+                <input type="hidden" id="selectedTime" name="selectedTime" required>
+            </div>
+
+            <div class="form-group">
+                <label for="name">您的姓名</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">聯絡電話 (例: 09XX-XXX-XXX)</label>
+                <input type="tel" id="phone" required pattern="[0-9]{4}[0-9]{6}">
+            </div>
+
+            <div class="form-group">
+                <label for="email">電子郵件 (Email)</label>
+                <input type="email" id="email" placeholder="example@gmail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="history">是否曾嫁接過睫毛？</label>
+                <select id="history" required>
+                    <option value="" disabled selected>請選擇...</option>
+                    <option value="yes">是</option>
+                    <option value="no">否</option>
+                </select>
+            </div>
+
+            <div style="display:none;">
+                <label for="nickname">暱稱</label>
+                <input type="text" id="nickname" name="nickname">
+            </div>
+
+            <button type="submit" class="submit-btn">確認預約</button>
+
+            <p class="note">
+                請注意：送出後您的預約將直接成立，若需更改請通知我們。<br>
+                聯絡資訊：0931205203 廖先生
+            </p>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
