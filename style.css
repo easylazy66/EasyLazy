@@ -248,3 +248,4 @@ select:focus {
     border-color: var(--primary-color); /* 焦點時使用主題色 */
     outline: none; /* 移除瀏覽器預設的藍色外框 */
 }
+
