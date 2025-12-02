@@ -1,14 +1,15 @@
 // --- JavaScript 邏輯區 ---
 
-// 全域變數：Google Apps Script 網址
+// --- 1.全域變數 ---
+// Google Apps Script 網址
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9RlvXy7-JFRcRZOVMQFJUWhs9zz0SJEU0oiXGnZCOs1biMpbUKYa-jzk-OmRipqs-jQ/exec';
 
-//  新增全域變數：用於儲存所有預約資料，避免重複向 Google 請求 
+// 用於儲存所有預約資料，避免重複向 Google 請求 
 let allBookedRecords = [];
 
-// 1. 服務時間對照表
+// 服務時間對照表
 const SERVICE_DETAILS = {
-    'single_custom': { text: '日式單根嫁接-客製款', time: 1 }
+    'single_custom': { text: '日式單根嫁接-客製款', time: 2 }
 };
 
 // 休息日/不可預約日期列表 (格式: YYYY-MM-DD)
@@ -17,7 +18,33 @@ const BLACKOUT_DATES = [
     '2025-12-25', // 聖誕節休息
     '2026-01-01', // 元旦休息
     '2026-02-14', // 情人節休息
+    '2025-12-31'  // 跨年
 ];
+
+function disableAllFormFields(message) {
+    // 獲取所有需要禁用的欄位 ID
+    const fields = [
+        'service', 'staff', 'date', 'name', 'phone', 'email', 'history', 'notes'
+    ];
+
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = true;
+    });
+
+    // 禁用主要提交按鈕
+    const submitBtn = document.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "系統資料載入失敗，不開放預約";
+    }
+
+    // 清空並顯示時段區塊的錯誤訊息
+    const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+    if (timeSlotsContainer) {
+        timeSlotsContainer.innerHTML = `<div style="grid-column: 1/-1; color: red; text-align: center; font-weight: bold;">${message}</div>`;
+    }
+}
 
 // 2. 輔助函式：時間轉分鐘數（保留）
 function timeToMinutes(timeStr) {
@@ -26,20 +53,19 @@ function timeToMinutes(timeStr) {
     return hour * 60 + minute;
 }
 
-// --- 新增：產生並下載 ICS 檔案的函式 ---
+// --- 產生並下載 ICS 檔案的函式 ---
 function downloadICS(data) {
     const pad = (num) => num.toString().padStart(2, '0');
 
     // 格式化日期時間為 ICS 標準 (YYYYMMDDTHHMMSS)
-    // 注意：這裡使用 Z 代表 UTC 時間，但為簡化流程，我們保持使用本地時間並忽略時區轉換，讓瀏覽器處理
     const formatICSDate = (dateObj) => {
         return `${dateObj.getFullYear()}${pad(dateObj.getMonth() + 1)}${pad(dateObj.getDate())}T${pad(dateObj.getHours())}${pad(dateObj.getMinutes())}00`;
     };
 
-    // 取得服務細節，預設為 1 小時
+    // 取得服務細節，預設為 2 小時
     const serviceDetail = typeof SERVICE_DETAILS !== 'undefined' && SERVICE_DETAILS[data.service]
         ? SERVICE_DETAILS[data.service]
-        : { text: '預約服務', time: 1 };
+        : { text: '預約服務', time: 2 };
 
     const durationHours = serviceDetail.time;
 
@@ -86,7 +112,6 @@ function downloadICS(data) {
 
 // 3. 更新服務資訊
 function updateServiceInfo() {
-    // 移除不必要的 onchange="generateTimeSlots()" 判斷
     generateTimeSlots();
 }
 
@@ -111,12 +136,12 @@ async function prefetchAllBookedAppointments() {
         const data = await response.json();
         allBookedRecords = data.records || []; // 將所有資料儲存到全域變數
         console.log(`成功載入 ${allBookedRecords.length} 筆預約記錄。`);
+        return true; // 成功
     } catch (err) {
         console.error('❌ 預加載預約資料失敗:', err);
         allBookedRecords = [];
-        alert('❌ 無法讀取預約資料，請檢查網路連線或 Apps Script 部署。');
-        // 如果預加載失敗，強制保持 Modal 顯示，或至少禁用表單
-        showLoadingModal();
+        alert('❌ 無法讀取預約資料，請檢查網路連線或重新整理，謝謝。');
+        return false; // 失敗
     }
 }
 
@@ -278,17 +303,9 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
             const dd = String(today.getDate()).padStart(2, '0');
             const realTodayStr = `${yyyy}-${mm}-${dd}`; // 今天的日期
 
-            const limitDateStr = "2025-12-19"; // 限制日期
-
-            // 判斷是否使用限制日期
-            let effectiveDate = realTodayStr;
-            if (realTodayStr < limitDateStr) {
-                effectiveDate = limitDateStr;
-            }
-
             const dateInput = document.getElementById('date');
-            dateInput.min = effectiveDate;
-            dateInput.value = effectiveDate; // 設置值與 min 一致，避免手機版驗證錯誤
+            dateInput.min = realTodayStr;
+            dateInput.value = realTodayStr; // 設置值與 min 一致，避免手機版驗證錯誤
 
             document.getElementById('timeSlotsContainer').innerHTML = '<div style="grid-column: 1/-1; color: #888; text-align: center;">請先選擇日期</div>';
             submitBtn.disabled = false;
@@ -306,40 +323,39 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 });
 
 // 8. 初始化設定：使用 Modal 顯示載入中
+// main.js (修改 window.addEventListener('load', ...))
+
 window.addEventListener('load', async function () {
     const dateInput = document.getElementById('date');
+    let loadSuccessful = false; // 新增旗標追蹤載入是否成功
 
-    // 1. 顯示 Loading Modal (鎖定畫面)
     showLoadingModal();
     dateInput.disabled = true;
 
-    // 2. 開始預加載資料
-    await prefetchAllBookedAppointments();
+    // 2. 開始預加載資料並獲取結果
+    loadSuccessful = await prefetchAllBookedAppointments();
 
-    // 3. 隱藏 Loading Modal (解鎖畫面)
-    hideLoadingModal();
-    dateInput.disabled = false;
+    // 3. 根據載入結果決定動作
+    if (loadSuccessful) {
+        // A. 載入成功 (執行原本的解鎖和初始化流程)
+        hideLoadingModal();
+        dateInput.disabled = false; // 雖然 disableAllFormFields 會處理，這裡保持原本的解鎖邏輯
 
-    // 4. 設定日期輸入欄位 (確保日期正確初始化)
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const realTodayStr = `${yyyy}-${mm}-${dd}`;
+        // 4. 設定日期輸入欄位 (確保日期正確初始化)
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        // ... (日期計算邏輯不變)
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const realTodayStr = `${yyyy}-${mm}-${dd}`;
 
-    const limitDateStr = "2025-12-19";
+        dateInput.min = realTodayStr;
+        dateInput.value = realTodayStr;
 
-    let effectiveDate = realTodayStr;
-    if (realTodayStr < limitDateStr) {
-        effectiveDate = limitDateStr;
+        updateServiceInfo();
+    } else {
+        // B. 載入失敗 (移除 Modal，鎖定所有欄位)
+        hideLoadingModal();
+        disableAllFormFields("預約資料讀取失敗，所有表單已鎖定。");
     }
-
-    dateInput.min = effectiveDate;
-    dateInput.value = effectiveDate;
-
-    // 5. 觸發更新：顯示時段
-    updateServiceInfo();
-
 });
-
-
