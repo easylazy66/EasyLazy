@@ -229,22 +229,33 @@ select:focus {
 
 /* --- 備註欄位 (Notes) 專屬樣式 --- */
 #notes {
-    min-height: 120px; /* 最小高度，提供足夠的輸入空間 */
-    resize: vertical; /* 只允許使用者垂直拖曳調整高度，不破壞寬度 */
+    min-height: 120px;
+    /* 最小高度，提供足夠的輸入空間 */
+    resize: vertical;
+    /* 只允許使用者垂直拖曳調整高度，不破壞寬度 */
 }
+
 .form-group textarea {
     width: 100%;
-    padding: 12px; /* 稍微大一點的內邊距，看起來更舒適 */
+    padding: 12px;
+    /* 稍微大一點的內邊距，看起來更舒適 */
     margin-top: 5px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-sizing: border-box; /* 確保 padding 不會讓寬度溢出 */
-    font-size: 16px; /* 確保手機上文字不會太小 */
+    box-sizing: border-box;
+    /* 確保 padding 不會讓寬度溢出 */
+    font-size: 16px;
+    /* 確保手機上文字不會太小 */
     color: var(--text-color);
-    transition: border-color 0.3s ease; /* 讓焦點切換更平滑 */
+    transition: border-color 0.3s ease;
+    /* 讓焦點切換更平滑 */
 }
-.form-group textarea:focus { /* 新增 textarea:focus */
-    border-color: var(--primary-color); /* 焦點時使用主題色 */
-    outline: none; /* 移除瀏覽器預設的藍色外框 */
+
+.form-group textarea:focus {
+    /* 新增 textarea:focus */
+    border-color: var(--primary-color);
+    /* 焦點時使用主題色 */
+    outline: none;
+    /* 移除瀏覽器預設的藍色外框 */
 }
