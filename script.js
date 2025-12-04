@@ -12,7 +12,7 @@ const SERVICE_DETAILS = {
     'single_custom': { text: '日式單根嫁接-客製款', time: 2 }
 };
 
-// 休息日/不可預約日期列表 (格式: YYYY-MM-DD)
+// 休息日不可預約日期列表 (格式: YYYY-MM-DD)
 // 這些日期將完全禁用，即便它們是平日或假日。
 const BLACKOUT_DATES = [
     '2025-12-25', // 聖誕節休息
@@ -359,3 +359,4 @@ window.addEventListener('load', async function () {
         disableAllFormFields("預約資料讀取失敗，所有表單已鎖定。");
     }
 });
+
