@@ -13,7 +13,7 @@ const SERVICE_DETAILS = {
 };
 
 // 休息日不可預約日期列表 (格式: YYYY-MM-DD)
-// 這些日期將完全禁用，即便它們是平日或假日。
+// 這些日期完全禁用，即便它們是平日或假日。
 const BLACKOUT_DATES = [
     '2025-12-25', // 聖誕節休息
     '2026-01-01', // 元旦休息
@@ -77,7 +77,7 @@ function downloadICS(data) {
 
     const title = `LazyEasy 線上預約 - ${serviceDetail.text}`;
 
-    // 描述內容 (ICS 要求單行，換行需要使用 \n 或 \N，但許多App只支援簡單換行)
+    // 描述內容 (ICS 要求單行，換行需要使用 \n 或 \N，但大部分App只支援簡單換行)
     const description = `服務項目: ${serviceDetail.text}\\n美睫師: ${data.staff}\\n姓名: ${data.name}\\n電話: ${data.phone}\\n\\n(請以店家最終確認為準)`;
 
     const icsContent = [
@@ -115,7 +115,7 @@ function updateServiceInfo() {
     generateTimeSlots();
 }
 
-//  新增：Modal 控制輔助函式 
+// Modal 控制輔助函式 
 function showLoadingModal() {
     const modal = document.getElementById('loadingModal');
     if (modal) modal.style.display = 'flex';
@@ -126,7 +126,7 @@ function hideLoadingModal() {
     if (modal) modal.style.display = 'none';
 }
 
-//  4. 修改：從 Google Sheet 讀取所有預約資料 (現在只會在載入時被呼叫一次) 
+// 從 Google Sheet 讀取所有預約資料 (現在只會在載入時被呼叫一次) 
 async function prefetchAllBookedAppointments() {
     console.log('--- 開始預加載所有預約資料 ---');
     try {
@@ -228,7 +228,7 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 
     const submitBtn = document.querySelector('.submit-btn');
 
-    // 獲取所有資料 (現在 HTML 已經有這些欄位了)
+    // 獲取所有資料 (現在 HTML 已經有這些欄位資料了)
     const serviceElement = document.getElementById('service');
     const service = serviceElement.options[serviceElement.selectedIndex].text;
     const staff = document.getElementById('staff').options[document.getElementById('staff').selectedIndex].text;
@@ -323,8 +323,6 @@ document.getElementById('bookingForm').addEventListener('submit', function (e) {
 });
 
 // 8. 初始化設定：使用 Modal 顯示載入中
-// main.js (修改 window.addEventListener('load', ...))
-
 window.addEventListener('load', async function () {
     const dateInput = document.getElementById('date');
     let loadSuccessful = false; // 新增旗標追蹤載入是否成功
